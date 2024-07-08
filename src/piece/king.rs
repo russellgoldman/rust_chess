@@ -10,6 +10,6 @@ pub struct King {
 
 impl ChessPieceTrait for King {
     fn valid_moves(&self) -> Option<Vec<BoardPosition>> {
-        Option::None // temporary value
+        None // temporary value
     }
 }

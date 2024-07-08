@@ -10,6 +10,6 @@ pub struct Bishop {
 
 impl ChessPieceTrait for Bishop {
     fn valid_moves(&self) -> Option<Vec<BoardPosition>> {
-        Option::None // temporary value
+        None // temporary value
     }
 }

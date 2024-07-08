@@ -11,6 +11,6 @@ pub struct Pawn {
 
 impl ChessPieceTrait for Pawn {
     fn valid_moves(&self) -> Option<Vec<BoardPosition>> {
-        Option::None // temporary value
+        None // temporary value
     }
 }
