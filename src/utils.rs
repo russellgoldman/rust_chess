@@ -9,7 +9,7 @@ use crate::{
 
 // Chess board should be an 8x8 2d vector
 pub fn initialize_chess_board() -> ChessBoard {
-    let mut board: ChessBoard = vec![];
+    let mut board: Vec<Vec<Option<ChessPiece>>> = vec![];
     for row_index in 0..=7 {
         let mut board_row: Vec<Option<ChessPiece>> = vec![];
         for column_index in 0..=7 {
@@ -46,5 +46,5 @@ pub fn initialize_chess_board() -> ChessBoard {
         board.push(board_row)
     }
 
-    board
+    ChessBoard { board }
 }

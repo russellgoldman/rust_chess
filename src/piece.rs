@@ -15,6 +15,7 @@ use rook::Rook;
 
 pub trait ChessPieceTrait {
     fn valid_moves(&self) -> Option<Vec<BoardPosition>>;
+    fn print_piece(&self);
 }
 
 #[derive(Debug)]
@@ -36,6 +37,17 @@ impl ChessPieceTrait for ChessPiece {
             ChessPiece::Rook(rook) => rook.valid_moves(),
             ChessPiece::Queen(queen) => queen.valid_moves(),
             ChessPiece::King(king) => king.valid_moves(),
+        }
+    }
+
+    fn print_piece(&self) {
+        match self {
+            ChessPiece::Pawn(pawn) => pawn.print_piece(),
+            ChessPiece::Bishop(bishop) => bishop.print_piece(),
+            ChessPiece::Knight(knight) => knight.print_piece(),
+            ChessPiece::Rook(rook) => rook.print_piece(),
+            ChessPiece::Queen(queen) => queen.print_piece(),
+            ChessPiece::King(king) => king.print_piece(),
         }
     }
 }

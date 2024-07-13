@@ -25,4 +25,11 @@ impl ChessPieceTrait for Pawn {
 
         None // temporary value
     }
+
+    fn print_piece(&self) {
+        match self.player {
+            Player::Black => print!("(P)"),
+            Player::White => print!("[P]"),
+        }
+    }
 }

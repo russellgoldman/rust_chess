@@ -12,4 +12,11 @@ impl ChessPieceTrait for Queen {
     fn valid_moves(&self) -> Option<Vec<BoardPosition>> {
         None // temporary value
     }
+
+    fn print_piece(&self) {
+        match self.player {
+            Player::Black => print!("(Q)"),
+            Player::White => print!("[Q]"),
+        }
+    }
 }
