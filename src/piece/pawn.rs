@@ -1,4 +1,5 @@
 use crate::{
+    game::ChessBoard,
     piece::{BoardPosition, ChessPieceTrait},
     player::Player,
 };
@@ -6,11 +7,12 @@ use crate::{
 #[derive(Debug)]
 pub struct Pawn {
     pub player: Player,
+    pub position: BoardPosition,
     pub has_been_moved: bool,
 }
 
 impl ChessPieceTrait for Pawn {
-    fn valid_moves(&self) -> Option<Vec<BoardPosition>> {
+    fn valid_moves(&self, board: &ChessBoard) -> Option<Vec<BoardPosition>> {
         /*
             Look at the current position of the piece
 

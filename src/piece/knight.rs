@@ -1,4 +1,5 @@
 use crate::{
+    game::ChessBoard,
     piece::{BoardPosition, ChessPieceTrait},
     player::Player,
 };
@@ -6,10 +7,11 @@ use crate::{
 #[derive(Debug)]
 pub struct Knight {
     pub player: Player,
+    pub position: BoardPosition,
 }
 
 impl ChessPieceTrait for Knight {
-    fn valid_moves(&self) -> Option<Vec<BoardPosition>> {
+    fn valid_moves(&self, board: &ChessBoard) -> Option<Vec<BoardPosition>> {
         None // temporary value
     }
 

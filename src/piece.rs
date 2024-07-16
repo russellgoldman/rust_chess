@@ -5,7 +5,7 @@ pub mod pawn;
 pub mod queen;
 pub mod rook;
 
-use crate::board::BoardPosition;
+use crate::game::{BoardPosition, ChessBoard};
 use bishop::Bishop;
 use king::King;
 use knight::Knight;
@@ -14,7 +14,7 @@ use queen::Queen;
 use rook::Rook;
 
 pub trait ChessPieceTrait {
-    fn valid_moves(&self) -> Option<Vec<BoardPosition>>;
+    fn valid_moves(&self, board: &ChessBoard) -> Option<Vec<BoardPosition>>;
     fn print_piece(&self);
 }
 
@@ -29,14 +29,14 @@ pub enum ChessPiece {
 }
 
 impl ChessPieceTrait for ChessPiece {
-    fn valid_moves(&self) -> Option<Vec<BoardPosition>> {
+    fn valid_moves(&self, board: &ChessBoard) -> Option<Vec<BoardPosition>> {
         match self {
-            ChessPiece::Pawn(pawn) => pawn.valid_moves(),
-            ChessPiece::Bishop(bishop) => bishop.valid_moves(),
-            ChessPiece::Knight(knight) => knight.valid_moves(),
-            ChessPiece::Rook(rook) => rook.valid_moves(),
-            ChessPiece::Queen(queen) => queen.valid_moves(),
-            ChessPiece::King(king) => king.valid_moves(),
+            ChessPiece::Pawn(pawn) => pawn.valid_moves(board),
+            ChessPiece::Bishop(bishop) => bishop.valid_moves(board),
+            ChessPiece::Knight(knight) => knight.valid_moves(board),
+            ChessPiece::Rook(rook) => rook.valid_moves(board),
+            ChessPiece::Queen(queen) => queen.valid_moves(board),
+            ChessPiece::King(king) => king.valid_moves(board),
         }
     }
 
