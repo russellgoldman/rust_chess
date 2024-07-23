@@ -1,5 +1,5 @@
 use crate::{
-    game::ChessBoard,
+    game::board::ChessBoard,
     piece::{BoardPosition, ChessPieceTrait},
     player::Player,
 };
@@ -11,14 +11,30 @@ pub struct Knight {
 }
 
 impl ChessPieceTrait for Knight {
-    fn valid_moves(&self, board: &ChessBoard) -> Option<Vec<BoardPosition>> {
-        None // temporary value
+    fn get_player(&self) -> &Player {
+        &self.player
     }
 
-    fn print_piece(&self) {
+    fn valid_moves(&self, board: &ChessBoard) -> Vec<BoardPosition> {
+        todo!();
+    }
+
+    fn valid_captures(&self, board: &ChessBoard) -> Vec<BoardPosition> {
+        todo!()
+    }
+
+    fn display_piece_on_board(&self) {
         match self.player {
-            Player::Black => print!("(k)"),
-            Player::White => print!("[k]"),
+            Player::Black => print!("(N)"),
+            Player::White => print!("[N]"),
         }
+    }
+
+    fn get_piece_name(&self) -> &str {
+        "Knight"
+    }
+
+    fn get_board_position(&self) -> &BoardPosition {
+        &self.position
     }
 }
