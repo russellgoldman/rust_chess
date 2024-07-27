@@ -1,5 +1,5 @@
 use crate::{
-    game::{board::ChessBoard, CandidateBoardPosition},
+    game::{board::ChessBoard, board_position::CandidateBoardPosition},
     piece::{BoardPosition, ChessPieceTrait},
     player::Player,
 };
@@ -96,5 +96,24 @@ impl ChessPieceTrait for Pawn {
 
     fn get_board_position(&self) -> &BoardPosition {
         &self.position
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Pawn;
+    use crate::{game::board_position::BoardPosition, piece::ChessPieceTrait, player::Player};
+
+    #[test]
+    fn test_get_player() {
+        let pawn = Pawn {
+            player: Player::Black,
+            position: BoardPosition {
+                row_index: 1,
+                column_index: 0,
+            },
+            has_been_moved: false,
+        };
+        assert_eq!(pawn.get_player(), &Player::Black);
     }
 }

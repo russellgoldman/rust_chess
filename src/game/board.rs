@@ -11,3 +11,8 @@ pub struct ChessBoardData {
 }
 pub type ChessBoard = [ChessRow; 8];
 pub type ChessRow = [Option<ChessPiece>; 8];
+
+pub fn initialize_empty_board() -> ChessBoard {
+    let board: ChessBoard = std::array::from_fn(|_| std::array::from_fn(|_| None));
+    board
+}

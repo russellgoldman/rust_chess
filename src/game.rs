@@ -1,4 +1,5 @@
 pub mod board;
+pub mod board_position;
 
 use crate::{
     piece::{
@@ -7,73 +8,10 @@ use crate::{
     },
     player::Player,
 };
-use board::{ChessBoard, ChessBoardData};
+use board::{initialize_empty_board, ChessBoard, ChessBoardData};
+use board_position::BoardPosition;
 use std::collections::HashMap;
-use std::hash::Hash;
 
-#[derive(Debug, Hash, Eq, PartialEq)]
-pub struct BoardPosition {
-    pub row_index: usize,
-    pub column_index: usize,
-}
-pub struct CandidateBoardPosition {
-    pub row_index: i32,
-    pub column_index: i32,
-}
-impl CandidateBoardPosition {
-    pub fn validate_move(&self, board: &ChessBoard) -> Option<BoardPosition> {
-        let is_valid_index: bool = {
-            let board_size = board.len() as i32; // Assuming a square board
-            self.row_index >= 0
-                && self.row_index < board_size
-                && self.column_index >= 0
-                && self.column_index < board_size
-        };
-
-        let valid_move: Option<BoardPosition> = if is_valid_index {
-            Some(BoardPosition {
-                row_index: self.row_index as usize,
-                column_index: self.column_index as usize,
-            })
-        } else {
-            None
-        };
-
-        valid_move
-    }
-
-    pub fn validate_capture(&self, player: &Player, board: &ChessBoard) -> Option<BoardPosition> {
-        /*
-            If the value prepending the ? operator is Some(), the value will be returned into the
-            valid_move variable. Otherwise, the function will return None immediately.
-        */
-        let valid_move: BoardPosition = self.validate_move(board)?;
-        let new_position: Option<&ChessPiece> =
-            board[valid_move.row_index][valid_move.column_index].as_ref();
-
-        let valid_capture = match new_position {
-            Some(piece) if piece.get_player() != player => Some(valid_move),
-            _ => None, // catch-all if new_position is None, or new_position is Some but piece.player() == player
-        };
-
-        valid_capture
-    }
-}
-impl BoardPosition {
-    pub fn get_column_letter(&self) -> char {
-        match self.column_index {
-            0 => 'a',
-            1 => 'b',
-            2 => 'c',
-            3 => 'd',
-            4 => 'e',
-            5 => 'f',
-            6 => 'g',
-            7 => 'h',
-            _ => panic!("Invalid column_index: {}", self.column_index),
-        }
-    }
-}
 pub struct ChessGame {
     pub board_data: ChessBoardData,
     pub turn: u32, // since white starts first, if turn % 2 == 0 means white's turn, otherwise black's turn
@@ -107,7 +45,7 @@ impl ChessGame {
         }
 
         // Chess board should be an 8x8 2d vector
-        let mut board: ChessBoard = std::array::from_fn(|_| std::array::from_fn(|_| None));
+        let mut board: ChessBoard = initialize_empty_board();
         let mut black_pieces: HashMap<BoardPosition, ChessPiece> = HashMap::new();
         let mut white_pieces: HashMap<BoardPosition, ChessPiece> = HashMap::new();
 

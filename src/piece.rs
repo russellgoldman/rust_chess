@@ -6,7 +6,7 @@ pub mod queen;
 pub mod rook;
 
 use crate::game::board::ChessBoard;
-use crate::game::BoardPosition;
+use crate::game::board_position::BoardPosition;
 use crate::player::Player;
 use bishop::Bishop;
 use king::King;
