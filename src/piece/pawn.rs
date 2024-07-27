@@ -101,19 +101,141 @@ impl ChessPieceTrait for Pawn {
 
 #[cfg(test)]
 mod tests {
-    use super::Pawn;
-    use crate::{game::board_position::BoardPosition, piece::ChessPieceTrait, player::Player};
-
-    #[test]
-    fn test_get_player() {
-        let pawn = Pawn {
-            player: Player::Black,
-            position: BoardPosition {
-                row_index: 1,
-                column_index: 0,
-            },
-            has_been_moved: false,
+    mod test_get_player {
+        use crate::{
+            game::board_position::BoardPosition,
+            piece::{pawn::Pawn, ChessPieceTrait},
+            player::Player,
         };
-        assert_eq!(pawn.get_player(), &Player::Black);
+
+        #[test]
+        fn test_get_black_player() {
+            let pawn = Pawn {
+                player: Player::Black,
+                position: BoardPosition {
+                    row_index: 1,
+                    column_index: 0,
+                },
+                has_been_moved: false,
+            };
+            assert_eq!(pawn.get_player(), &Player::Black);
+        }
+
+        #[test]
+        fn test_get_white_player() {
+            let pawn = Pawn {
+                player: Player::White,
+                position: BoardPosition {
+                    row_index: 1,
+                    column_index: 0,
+                },
+                has_been_moved: false,
+            };
+            assert_eq!(pawn.get_player(), &Player::White);
+        }
+    }
+
+    mod test_valid_moves {
+        #[test]
+        fn test_black_normal_move_is_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_black_initial_move_is_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_black_normal_and_initial_moves_are_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_black_no_valid_moves() {
+            todo!();
+        }
+
+        #[test]
+        fn test_black_invalid_move_position_not_included() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_normal_move_is_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_initial_move_is_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_normal_and_initial_moves_are_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_no_valid_moves() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_invalid_move_position_not_included() {
+            todo!();
+        }
+    }
+
+    mod test_valid_captures {
+        #[test]
+        fn test_black_left_diagonal_capture_is_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_black_right_diagonal_capture_is_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_black_left_and_right_diagonal_captures_are_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_black_no_valid_captures() {
+            todo!();
+        }
+
+        #[test]
+        fn test_black_invalid_capture_position_not_included() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_left_diagonal_capture_is_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_right_diagonal_capture_is_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_left_and_right_diagonal_captures_are_valid() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_no_valid_captures() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_invalid_capture_position_not_included() {
+            todo!();
+        }
     }
 }
