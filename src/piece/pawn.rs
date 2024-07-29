@@ -24,12 +24,16 @@ impl ChessPieceTrait for Pawn {
             Player::Black => -1,
         };
 
-        let normal_move = CandidateBoardPosition {
-            row_index: self.position.row_index as i32 + pawn_direction,
-            column_index: self.position.column_index as i32,
+        let normal_move: CandidateBoardPosition = CandidateBoardPosition {
+            row_index: self.position.get_row_index() as i32 + pawn_direction,
+            column_index: self.position.get_column_index() as i32,
         };
-        if let Some(board_position) = normal_move.validate_move(board) {
-            valid_moves.push(board_position);
+
+        if let Some(normal_move_position) = normal_move
+            .validate_candidate_position(&board)
+            .filter(|position| position.is_move_valid(&board))
+        {
+            valid_moves.push(normal_move_position);
 
             /*
                 We have decided to include the two position move check within the one position move check.
@@ -37,12 +41,16 @@ impl ChessPieceTrait for Pawn {
                 forward, it also cannot be moved two positions forward.
             */
             if !self.has_been_moved {
-                let initial_two_move = CandidateBoardPosition {
-                    row_index: self.position.row_index as i32 + (pawn_direction * 2),
-                    column_index: self.position.column_index as i32,
+                let initial_two_move: CandidateBoardPosition = CandidateBoardPosition {
+                    row_index: self.position.get_row_index() as i32 + (pawn_direction * 2),
+                    column_index: self.position.get_column_index() as i32,
                 };
-                if let Some(board_position) = initial_two_move.validate_move(board) {
-                    valid_moves.push(board_position);
+
+                if let Some(initial_two_move_position) = initial_two_move
+                    .validate_candidate_position(&board)
+                    .filter(|position| position.is_move_valid(&board))
+                {
+                    valid_moves.push(initial_two_move_position);
                 }
             }
         }
@@ -57,19 +65,26 @@ impl ChessPieceTrait for Pawn {
             Player::Black => -1,
         };
 
-        let left_diagonal_capture = CandidateBoardPosition {
-            row_index: self.position.row_index as i32 + (pawn_direction),
-            column_index: self.position.column_index as i32 - 1,
+        let left_diagonal_capture: CandidateBoardPosition = CandidateBoardPosition {
+            row_index: self.position.get_row_index() as i32 + (pawn_direction),
+            column_index: self.position.get_column_index() as i32 - 1,
         };
-        if let Some(board_position) = left_diagonal_capture.validate_capture(&self.player, board) {
+
+        if let Some(board_position) = left_diagonal_capture
+            .validate_candidate_position(&board)
+            .filter(|position| position.is_capture_valid(&self.player, &board))
+        {
             valid_captures.push(board_position);
         }
 
-        let right_diagonal_capture = CandidateBoardPosition {
-            row_index: self.position.row_index as i32 + (pawn_direction),
-            column_index: self.position.column_index as i32 + 1,
+        let right_diagonal_capture: CandidateBoardPosition = CandidateBoardPosition {
+            row_index: self.position.get_row_index() as i32 + (pawn_direction),
+            column_index: self.position.get_column_index() as i32 + 1,
         };
-        if let Some(board_position) = right_diagonal_capture.validate_capture(&self.player, board) {
+        if let Some(board_position) = right_diagonal_capture
+            .validate_candidate_position(&board)
+            .filter(|position| position.is_capture_valid(&self.player, &board))
+        {
             valid_captures.push(board_position);
         }
 
@@ -96,19 +111,24 @@ impl ChessPieceTrait for Pawn {
 mod tests {
     mod test_get_player {
         use crate::{
-            game::board_position::BoardPosition,
+            game::{
+                board::{initialize_empty_board, ChessBoard},
+                board_position::CandidateBoardPosition,
+            },
             piece::{pawn::Pawn, ChessPieceTrait},
             player::Player,
         };
 
         #[test]
         fn test_get_black_player() {
+            let board: ChessBoard = initialize_empty_board();
             let pawn = Pawn {
                 player: Player::Black,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 1,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: false,
             };
             assert_eq!(pawn.get_player(), &Player::Black);
@@ -116,12 +136,14 @@ mod tests {
 
         #[test]
         fn test_get_white_player() {
+            let board: ChessBoard = initialize_empty_board();
             let pawn = Pawn {
                 player: Player::White,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 1,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: false,
             };
             assert_eq!(pawn.get_player(), &Player::White);
@@ -132,7 +154,7 @@ mod tests {
         use crate::{
             game::{
                 board::{initialize_empty_board, ChessBoard},
-                board_position::BoardPosition,
+                board_position::CandidateBoardPosition,
             },
             piece::{pawn::Pawn, ChessPiece, ChessPieceTrait},
             player::Player,
@@ -143,18 +165,20 @@ mod tests {
             let board: ChessBoard = initialize_empty_board();
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::Black,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 4,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: true,
             });
             assert_eq!(
                 pawn.valid_moves(&board),
-                vec![BoardPosition {
+                vec![CandidateBoardPosition {
                     row_index: 3,
                     column_index: 0,
-                }]
+                }
+                .validate_candidate_position_and_unwrap(&board),]
             );
         }
 
@@ -163,26 +187,29 @@ mod tests {
             let mut board: ChessBoard = initialize_empty_board();
             board[5][0] = Some(ChessPiece::Pawn(Pawn {
                 player: Player::White,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 5,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: true,
             }));
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::Black,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 7,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: false,
             });
             assert_eq!(
                 pawn.valid_moves(&board),
-                vec![BoardPosition {
+                vec![CandidateBoardPosition {
                     row_index: 6,
                     column_index: 0,
-                }]
+                }
+                .validate_candidate_position_and_unwrap(&board),]
             );
         }
 
@@ -191,23 +218,26 @@ mod tests {
             let board: ChessBoard = initialize_empty_board();
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::Black,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 7,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: false,
             });
             assert_eq!(
                 pawn.valid_moves(&board),
                 vec![
-                    BoardPosition {
+                    CandidateBoardPosition {
                         row_index: 6,
                         column_index: 0,
-                    },
-                    BoardPosition {
+                    }
+                    .validate_candidate_position_and_unwrap(&board),
+                    CandidateBoardPosition {
                         row_index: 5,
                         column_index: 0,
                     }
+                    .validate_candidate_position_and_unwrap(&board)
                 ]
             );
         }
@@ -217,18 +247,20 @@ mod tests {
             let mut board: ChessBoard = initialize_empty_board();
             board[6][0] = Some(ChessPiece::Pawn(Pawn {
                 player: Player::White,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 6,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: true,
             }));
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::Black,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 7,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: false,
             });
             assert_eq!(pawn.valid_moves(&board), vec![]);
@@ -239,10 +271,11 @@ mod tests {
             let board: ChessBoard = initialize_empty_board();
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::Black,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 0,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: true,
             });
             assert_eq!(pawn.valid_moves(&board), vec![]);
@@ -253,18 +286,20 @@ mod tests {
             let board: ChessBoard = initialize_empty_board();
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::White,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 3,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: true,
             });
             assert_eq!(
                 pawn.valid_moves(&board),
-                vec![BoardPosition {
+                vec![CandidateBoardPosition {
                     row_index: 4,
                     column_index: 0,
-                }]
+                }
+                .validate_candidate_position_and_unwrap(&board)]
             )
         }
 
@@ -273,26 +308,29 @@ mod tests {
             let mut board: ChessBoard = initialize_empty_board();
             board[3][0] = Some(ChessPiece::Pawn(Pawn {
                 player: Player::Black,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 3,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: true,
             }));
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::White,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 1,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: false,
             });
             assert_eq!(
                 pawn.valid_moves(&board),
-                vec![BoardPosition {
+                vec![CandidateBoardPosition {
                     row_index: 2,
                     column_index: 0,
-                }]
+                }
+                .validate_candidate_position_and_unwrap(&board)]
             );
         }
 
@@ -301,23 +339,26 @@ mod tests {
             let board: ChessBoard = initialize_empty_board();
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::White,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 1,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: false,
             });
             assert_eq!(
                 pawn.valid_moves(&board),
                 vec![
-                    BoardPosition {
+                    CandidateBoardPosition {
                         row_index: 2,
                         column_index: 0,
-                    },
-                    BoardPosition {
+                    }
+                    .validate_candidate_position_and_unwrap(&board),
+                    CandidateBoardPosition {
                         row_index: 3,
                         column_index: 0,
                     }
+                    .validate_candidate_position_and_unwrap(&board)
                 ]
             );
         }
@@ -327,18 +368,20 @@ mod tests {
             let mut board: ChessBoard = initialize_empty_board();
             board[2][0] = Some(ChessPiece::Pawn(Pawn {
                 player: Player::Black,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 2,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: true,
             }));
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::White,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 1,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: false,
             });
             assert_eq!(pawn.valid_moves(&board), vec![]);
@@ -349,10 +392,11 @@ mod tests {
             let board: ChessBoard = initialize_empty_board();
             let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
                 player: Player::White,
-                position: BoardPosition {
+                position: CandidateBoardPosition {
                     row_index: 7,
                     column_index: 0,
-                },
+                }
+                .validate_candidate_position_and_unwrap(&board),
                 has_been_moved: true,
             });
             assert_eq!(pawn.valid_moves(&board), vec![]);
@@ -360,14 +404,75 @@ mod tests {
     }
 
     mod test_valid_captures {
+        use crate::{
+            game::{
+                board::{initialize_empty_board, ChessBoard},
+                board_position::CandidateBoardPosition,
+            },
+            piece::{pawn::Pawn, ChessPiece, ChessPieceTrait},
+            player::Player,
+        };
+
         #[test]
         fn test_black_left_diagonal_capture_is_valid() {
-            todo!();
+            let mut board: ChessBoard = initialize_empty_board();
+            board[3][3] = Some(ChessPiece::Pawn(Pawn {
+                player: Player::White,
+                position: CandidateBoardPosition {
+                    row_index: 3,
+                    column_index: 3,
+                }
+                .validate_candidate_position_and_unwrap(&board),
+                has_been_moved: true,
+            }));
+            let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
+                player: Player::Black,
+                position: CandidateBoardPosition {
+                    row_index: 4,
+                    column_index: 4,
+                }
+                .validate_candidate_position_and_unwrap(&board),
+                has_been_moved: true,
+            });
+            assert_eq!(
+                pawn.valid_captures(&board),
+                vec![CandidateBoardPosition {
+                    row_index: 3,
+                    column_index: 3,
+                }
+                .validate_candidate_position_and_unwrap(&board)]
+            );
         }
 
         #[test]
         fn test_black_right_diagonal_capture_is_valid() {
-            todo!();
+            let mut board: ChessBoard = initialize_empty_board();
+            board[3][5] = Some(ChessPiece::Pawn(Pawn {
+                player: Player::White,
+                position: CandidateBoardPosition {
+                    row_index: 3,
+                    column_index: 5,
+                }
+                .validate_candidate_position_and_unwrap(&board),
+                has_been_moved: true,
+            }));
+            let pawn: ChessPiece = ChessPiece::Pawn(Pawn {
+                player: Player::Black,
+                position: CandidateBoardPosition {
+                    row_index: 4,
+                    column_index: 4,
+                }
+                .validate_candidate_position_and_unwrap(&board),
+                has_been_moved: true,
+            });
+            assert_eq!(
+                pawn.valid_captures(&board),
+                vec![CandidateBoardPosition {
+                    row_index: 3,
+                    column_index: 5,
+                }
+                .validate_candidate_position_and_unwrap(&board)]
+            );
         }
 
         #[test]
@@ -377,6 +482,11 @@ mod tests {
 
         #[test]
         fn test_black_no_valid_captures() {
+            todo!();
+        }
+
+        #[test]
+        fn test_black_same_player_diagonal_capture_is_ignored() {
             todo!();
         }
 
@@ -402,6 +512,11 @@ mod tests {
 
         #[test]
         fn test_white_no_valid_captures() {
+            todo!();
+        }
+
+        #[test]
+        fn test_white_same_player_diagonal_capture_is_ignored() {
             todo!();
         }
 

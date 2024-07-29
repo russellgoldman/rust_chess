@@ -9,7 +9,7 @@ use crate::{
     player::Player,
 };
 use board::{initialize_empty_board, ChessBoard, ChessBoardData};
-use board_position::BoardPosition;
+use board_position::{BoardPosition, CandidateBoardPosition};
 use std::collections::HashMap;
 
 pub struct ChessGame {
@@ -28,18 +28,65 @@ impl ChessGame {
                 _ => panic!("Given row_index: {row_index}. This should not be evaluated as a player starting row index.")
             }
         }
-        fn get_piece_by_initial_position(row_index: usize, column_index: usize) -> ChessPiece {
+        fn get_piece_by_initial_position(
+            row_index: usize,
+            column_index: usize,
+            board: &ChessBoard,
+        ) -> ChessPiece {
             let player = get_player_by_initial_row(row_index);
             match row_index {
                 0 | 7 => match column_index {
-                    0 | 7 => ChessPiece::Rook(Rook { player, position: BoardPosition { row_index, column_index } }),
-                    1 | 6 => ChessPiece::Knight(Knight { player, position: BoardPosition { row_index, column_index } }),
-                    2 | 5 => ChessPiece::Bishop(Bishop { player, position: BoardPosition { row_index, column_index } }),
-                    3 => ChessPiece::Queen(Queen { player, position: BoardPosition { row_index, column_index } }),
-                    4 => ChessPiece::King(King { player, position: BoardPosition { row_index, column_index } }),
+                    0 | 7 => ChessPiece::Rook(Rook {
+                        player,
+                        position: CandidateBoardPosition {
+                            row_index: row_index as i32,
+                            column_index: column_index as i32
+                        }
+                        .validate_candidate_position_and_unwrap(&board)
+                    }),
+                    1 | 6 => ChessPiece::Knight(Knight {
+                        player,
+                        position: CandidateBoardPosition {
+                            row_index: row_index as i32,
+                            column_index: column_index as i32
+                        }
+                        .validate_candidate_position_and_unwrap(&board)
+                    }),
+                    2 | 5 => ChessPiece::Bishop(Bishop {
+                        player,
+                        position: CandidateBoardPosition {
+                            row_index: row_index as i32,
+                            column_index: column_index as i32
+                        }
+                        .validate_candidate_position_and_unwrap(&board)
+                    }),
+                    3 => ChessPiece::Queen(Queen {
+                        player,
+                        position: CandidateBoardPosition {
+                            row_index: row_index as i32,
+                            column_index: column_index as i32
+                        }
+                        .validate_candidate_position_and_unwrap(&board)
+                    }),
+                    4 => ChessPiece::King(King {
+                        player,
+                        position: CandidateBoardPosition {
+                            row_index: row_index as i32,
+                            column_index: column_index as i32
+                        }
+                        .validate_candidate_position_and_unwrap(&board)
+                    }),
                     _ => panic!("Invalid {column_index}"),
                 },
-                1 | 6 => ChessPiece::Pawn(Pawn { player, position: BoardPosition { row_index, column_index }, has_been_moved: false }),
+                1 | 6 => ChessPiece::Pawn(Pawn {
+                    player,
+                    position: CandidateBoardPosition {
+                        row_index: row_index as i32,
+                        column_index: column_index as i32
+                    }
+                    .validate_candidate_position_and_unwrap(&board),
+                    has_been_moved: false
+                }),
                 _ => panic!("Given row_index: {row_index}. This should not be evaluated as a starting row index.")
             }
         }
@@ -56,24 +103,28 @@ impl ChessGame {
                     // Since we initialize pieces to None by default, we can continue
                     continue;
                 } else {
-                    let piece: ChessPiece = get_piece_by_initial_position(row_index, column_index);
+                    let piece: ChessPiece =
+                        get_piece_by_initial_position(row_index, column_index, &board);
                     board[row_index][column_index] = Some(piece);
 
                     let player = get_player_by_initial_row(row_index);
-                    let piece: ChessPiece = get_piece_by_initial_position(row_index, column_index);
+                    let piece: ChessPiece =
+                        get_piece_by_initial_position(row_index, column_index, &board);
                     match player {
                         Player::Black => black_pieces.insert(
-                            BoardPosition {
-                                row_index: row_index as usize,
-                                column_index: column_index as usize,
-                            },
+                            CandidateBoardPosition {
+                                row_index: row_index as i32,
+                                column_index: column_index as i32,
+                            }
+                            .validate_candidate_position_and_unwrap(&board),
                             piece,
                         ),
                         Player::White => white_pieces.insert(
-                            BoardPosition {
-                                row_index: row_index as usize,
-                                column_index: column_index as usize,
-                            },
+                            CandidateBoardPosition {
+                                row_index: row_index as i32,
+                                column_index: column_index as i32,
+                            }
+                            .validate_candidate_position_and_unwrap(&board),
                             piece,
                         ),
                     };

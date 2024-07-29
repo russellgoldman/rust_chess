@@ -29,7 +29,7 @@ pub trait ChessPieceTrait {
             "{} ({}{})",
             self.get_piece_name(),
             self.get_board_position().get_column_letter(),
-            self.get_board_position().row_index + 1
+            self.get_board_position().get_row_index() + 1
         )
     }
 }
