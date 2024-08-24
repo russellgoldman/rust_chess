@@ -4,7 +4,7 @@ mod player;
 
 use game::ChessGame;
 use inquire::Select;
-use piece::{ChessPiece, ChessPieceTrait};
+use piece::{ChessPiece, ChessPieceTrait, PieceMoveData};
 use player::Player;
 
 fn main() {
@@ -34,8 +34,13 @@ fn main() {
                             )
                         });
 
-                let valid_moves = piece.valid_moves(&game.board_data.board);
-                let valid_captures = piece.valid_captures(&game.board_data.board);
+                let piece_move_data = piece.valid_moves_and_captures(&game.board_data.board);
+                let PieceMoveData {
+                    valid_moves,
+                    valid_captures,
+                } = piece_move_data;
+                println!("{:?}", valid_moves);
+                println!("{:?}", valid_captures);
             }
             Player::Black => {
                 println!("TODO");

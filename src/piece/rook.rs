@@ -1,6 +1,6 @@
 use crate::{
     game::board::ChessBoard,
-    piece::{BoardPosition, ChessPieceTrait},
+    piece::{BoardPosition, ChessPieceTrait, PieceMoveData},
     player::Player,
 };
 
@@ -15,12 +15,8 @@ impl ChessPieceTrait for Rook {
         &self.player
     }
 
-    fn valid_moves(&self, board: &ChessBoard) -> Vec<BoardPosition> {
+    fn valid_moves_and_captures(&self, board: &ChessBoard) -> PieceMoveData {
         todo!();
-    }
-
-    fn valid_captures(&self, board: &ChessBoard) -> Vec<BoardPosition> {
-        todo!()
     }
 
     fn display_piece_on_board(&self) {

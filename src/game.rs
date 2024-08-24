@@ -91,7 +91,7 @@ impl ChessGame {
             }
         }
 
-        // Chess board should be an 8x8 2d vector
+        // Chess board should be an 8x8 2D array
         let mut board: ChessBoard = initialize_empty_board();
         let mut black_pieces: HashMap<BoardPosition, ChessPiece> = HashMap::new();
         let mut white_pieces: HashMap<BoardPosition, ChessPiece> = HashMap::new();

@@ -16,10 +16,15 @@ use queen::Queen;
 use rook::Rook;
 use std::fmt;
 
+#[derive(Debug, PartialEq, Eq)]
+pub struct PieceMoveData {
+    pub valid_moves: Vec<BoardPosition>,
+    pub valid_captures: Vec<BoardPosition>,
+}
+
 pub trait ChessPieceTrait {
     fn get_player(&self) -> &Player;
-    fn valid_moves(&self, board: &ChessBoard) -> Vec<BoardPosition>;
-    fn valid_captures(&self, board: &ChessBoard) -> Vec<BoardPosition>;
+    fn valid_moves_and_captures(&self, board: &ChessBoard) -> PieceMoveData;
     fn display_piece_on_board(&self);
     fn get_piece_name(&self) -> &str;
     fn get_board_position(&self) -> &BoardPosition;
@@ -62,25 +67,14 @@ impl ChessPieceTrait for ChessPiece {
         }
     }
 
-    fn valid_moves(&self, board: &ChessBoard) -> Vec<BoardPosition> {
+    fn valid_moves_and_captures(&self, board: &ChessBoard) -> PieceMoveData {
         match self {
-            ChessPiece::Pawn(pawn) => pawn.valid_moves(board),
-            ChessPiece::Bishop(bishop) => bishop.valid_moves(board),
-            ChessPiece::Knight(knight) => knight.valid_moves(board),
-            ChessPiece::Rook(rook) => rook.valid_moves(board),
-            ChessPiece::Queen(queen) => queen.valid_moves(board),
-            ChessPiece::King(king) => king.valid_moves(board),
-        }
-    }
-
-    fn valid_captures(&self, board: &ChessBoard) -> Vec<BoardPosition> {
-        match self {
-            ChessPiece::Pawn(pawn) => pawn.valid_captures(board),
-            ChessPiece::Bishop(bishop) => bishop.valid_captures(board),
-            ChessPiece::Knight(knight) => knight.valid_captures(board),
-            ChessPiece::Rook(rook) => rook.valid_captures(board),
-            ChessPiece::Queen(queen) => queen.valid_captures(board),
-            ChessPiece::King(king) => king.valid_captures(board),
+            ChessPiece::Pawn(pawn) => pawn.valid_moves_and_captures(board),
+            ChessPiece::Bishop(bishop) => bishop.valid_moves_and_captures(board),
+            ChessPiece::Knight(knight) => knight.valid_moves_and_captures(board),
+            ChessPiece::Rook(rook) => rook.valid_moves_and_captures(board),
+            ChessPiece::Queen(queen) => queen.valid_moves_and_captures(board),
+            ChessPiece::King(king) => king.valid_moves_and_captures(board),
         }
     }
 
